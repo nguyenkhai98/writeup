@@ -29,3 +29,59 @@ router.get("/letters", (req, res) => {
 ```
 
 => Khi `GET /letters` thì ứng dụng sẽ trả về nội dung từ `viewletters.html` với giá trị `cdn` như trên. Okay, vậy giá trị **cdn** có vai trò gì?
+Cùng check nội dung file **viewletters.html**:
+
+```html
+{% extends "base.html" %}
+{% block content %}
+  <h1 class="title" style="margin: 0">Viewing letter #<span id="letter-id">1</span></h1>
+  <h2 class="title" id="error-message" style="visibility: hidden;">&nbsp;</h2>
+  {% include "letter.html" %}
+  
+  <div class="letter letter-small">
+    <div class="letter-inner letter-inner-small">
+        <a href="/">Write New Letter</a>
+    </div>
+  </div>
+  
+  <div id="previous" class="sign-post">
+    <div class="sign-post-text">
+      <a href="#">View previous<br><br>letter</a>
+    </div>
+  </div>
+
+  <div id="next" class="sign-post flipped">
+    <div class="sign-post-text">
+      <a href="#">View next<br><br>letter</a>
+    </div>
+  </div>
+
+  <script src="viewletter.js"></script>
+{% endblock %}
+```
+
+File này extends nội dung từ **base.html**:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="{{cdn}}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat&amp;family=Secular+One&amp;display=swap" rel="stylesheet" />
+    <link href="main.css" rel="stylesheet" />
+    <title>Write to the Easter Bunny!</title>
+  </head>
+
+  <body>
+
+    {% block content %}{% endblock %}
+  </body>
+</html>
+```
+=> Trong nội dung **base.html**, có nội dung code sau `<base href="{{cdn}}" />`
