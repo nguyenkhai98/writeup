@@ -28,4 +28,4 @@ router.get("/letters", (req, res) => {
 });
 ```
 
-=> Khi `GET /letters` thì ứng dụng sẽ trả về nội dung từ `viewletters.html` với giá trị `cdn` như trên. Okay, vậy giá trị `cdn` có vai trò gì?
+=> Khi `GET /letters` thì ứng dụng sẽ trả về nội dung từ `viewletters.html` với giá trị `cdn` như trên. Okay, vậy giá trị **cdn** có vai trò gì?
