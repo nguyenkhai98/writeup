@@ -200,6 +200,9 @@ Thử truy cập đến link file trên để chắc chắn rằng ứng dụng 
 
 2. Thực hiện Cache Poisoning
 
+- Cấu hình đổi Thông tin `Host` về `127.0.0.1` nhằm đầu độc Cache đến `http://127.0.0.1/letters?id=13`.
+- Bổ sung `X-Forwarded-Host` trỏ đến IP của Fake Server để Server Cache lại link đến file **viewletter.js** fake.
+
 ![image](https://github.com/nguyenkhai98/writeup/assets/51147179/dfe4df62-aa1a-466d-8245-d673f7feb318)
 
 => Nếu request sau cũng trỏ đến URL `/letters?id=13` thì sẽ gọi đến file **viewletter.js** fake mà ta đã setup bên trên.
@@ -207,5 +210,9 @@ Thử truy cập đến link file trên để chắc chắn rằng ứng dụng 
 3. Thực hiện call đến `/submit` để write new letter => Ứng dụng sẽ gọi đến `http://127.0.0.1/letters?id=${inserted.lastID}` với `lastID=13` (thứ tự ID mới nhất)
 
 ![image](https://github.com/nguyenkhai98/writeup/assets/51147179/70531239-ad9f-4672-a50d-a1f30dfd7c62)
+
+Khi này Request do đã bị cache link `http://127.0.0.1/letters?id=13` ở bước 2 nên sẽ thực hiện gọi đến file **viewletter.js** fake => Thực hiện gọi đến link `http://127.0.0.1:80/message/3`, đọc nội dung của message id=3 rồi submit nội dung này thành nội dung của new letter bằng cách gọi link `http://127.0.0.1:80/submit`.
+
+4. Request nội dung của letter message có `id=14` để đọc nội dung lấy ra từ message có `id=3`:
 
 ![image](https://github.com/nguyenkhai98/writeup/assets/51147179/2ef27374-6b2b-4189-8d89-a122078577d9)
