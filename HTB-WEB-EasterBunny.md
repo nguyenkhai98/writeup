@@ -88,10 +88,13 @@ router.post("/submit", async (req, res) => {
 });
 ```
 
-Request `await visit(`http://127.0.0.1/letters?id=${inserted.lastID}`, authSecret);` vừa hay đáp ứng hai điều kiện để `isAdmin(req)=True`. => Vậy để đọc được nội dung của message có `id=3`, ta phải tìm cách để trigger code chạy được lệnh: ```await visit(`http://127.0.0.1/letters?id=3`, authSecret);```
+Request ***await visit(`http://127.0.0.1/letters?id=${inserted.lastID}`, authSecret);*** vừa hay đáp ứng hai điều kiện để `isAdmin(req)=True`.
 
+### Điều kiện cần số 1 => Vậy để đọc được nội dung của message có `id=3`, ta phải tìm cách để trigger code chạy được lệnh: ***await visit(`http://127.0.0.1/letters?id=3`, authSecret);***.
 
-Chi tiết phần code xử lý request đến URL `/letters` như sau: 
+But how???
+
+Tiếp tục đọc chi tiết phần code xử lý request đến URL `/letters` như sau: 
 
 ```javascript
 router.get("/letters", (req, res) => {
@@ -138,4 +141,34 @@ File này extends nội dung từ **base.html**:
 
 Thinking!!! Chúng ta có thể lợi dụng được gì trong tình huống này? ... Nếu manipulate được các nội dung như **${req.protocol}**, **${req.hostname}**, **${req.headers["x-forwarded-port"]** thì ta có thể khiến cho URL trỏ đến các file **viewletter.js** thay đổi, và nếu ta thay đổi link đến file fake **viewletter.js** trên server mà ta quản lý thì ta hoàn toàn có thể chỉnh sửa tùy ý nội dung của file **viewletter.js** fake này => Run các script theo ý định mà ta muốn (XSS).
 
-Nhưng làm sao để khiến cho `<base href>` ở request A 
+
+### Điều kiện cần số 2 => khiến Request trỏ đến file viewletter.js fake, qua đó Run Script tùy ý.
+
+Nghiên cứu đoạn thông tin docker challenge được cung cấp, ta thấy ứng dụng sử dụng **Varnish Cache** với thông tin cấu hình trong file **cache.vcl**:
+
+```
+vcl 4.1;
+
+backend default {
+    .host = "127.0.0.1";
+    .port = "1337";
+}
+
+sub vcl_hash {
+    hash_data(req.url);
+
+    if (req.http.host) {
+        hash_data(req.http.host);
+    } else {
+        hash_data(server.ip);
+    }
+
+    return (lookup);
+}
+```
+
+Nội dung file config cho thấy ứng dụng sẽ thực hiện cache theo các thông tin: URL và host hoặc IP. => Như vậy nếu Request A trả về kết quả gọi đến file `viewletter.js` fake thì khi ta khởi tạo request B (sau request A) với chung URL và Host hoặc IP cũng sẽ gọi đến file `viewletter.js` fake.
+
+### Điều kiện cần số 3 => Cần phải thực hiện Cache Poisoning để đánh lừa ứng dụng gọi đến file  `viewletter.js` fake.
+
+
