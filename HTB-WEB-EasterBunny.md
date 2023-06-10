@@ -63,7 +63,7 @@ router.get("/letters", (req, res) => {
 => Khi `GET /letters` thì ứng dụng sẽ trả về nội dung từ `viewletters.html` với giá trị `cdn` như trên. Okay, vậy giá trị **cdn** có vai trò gì?
 Cùng check nội dung file **viewletters.html**:
 
-```html
+```
 {% extends "base.html" %}
 {% block content %}
   <h1 class="title" style="margin: 0">Viewing letter #<span id="letter-id">1</span></h1>
