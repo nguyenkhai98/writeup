@@ -88,7 +88,7 @@ router.post("/submit", async (req, res) => {
 });
 ```
 
-Request `await visit(`http://127.0.0.1/letters?id=${inserted.lastID}`, authSecret);` vừa hay đáp ứng hai điều kiện để `isAdmin(req)=True`. => Vậy để đọc được nội dung của message có `id=3`, ta phải tìm cách để trigger code chạy được lệnh: `await visit(`http://127.0.0.1/letters?id=3`, authSecret);`
+Request `await visit(`http://127.0.0.1/letters?id=${inserted.lastID}`, authSecret);` vừa hay đáp ứng hai điều kiện để `isAdmin(req)=True`. => Vậy để đọc được nội dung của message có `id=3`, ta phải tìm cách để trigger code chạy được lệnh: ```await visit(`http://127.0.0.1/letters?id=3`, authSecret);```
 
 
 Chi tiết phần code xử lý request đến URL `/letters` như sau: 
