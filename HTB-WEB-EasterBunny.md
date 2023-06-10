@@ -50,12 +50,7 @@ router.get("/message/:id", async (req, res) => {
 
 => Như vậy các message có trường **hidden=1** và **!isAdmin(req)** thì sẽ không hiển thị nội dung ra bên ngoài trình duyệt. Để đạt được mục đích, ta phải tìm cách để request đọc message id=3 phải được hiểu là xuất phát từ **admin**.
 
-
-
-
-![image](https://github.com/nguyenkhai98/writeup/assets/51147179/4931f70f-d3b8-4d38-9e3c-96ae64808372)
-
-Chi tiết phần code xử lý request đến URL `/letters` (dòng 17->21) và `/submit` (dòng 23->45) trong file `routes/routes.js` như hình bên trên.
+Chi tiết phần code xử lý request đến URL `/letters` như sau:
 
 ```javascript
 router.get("/letters", (req, res) => {
