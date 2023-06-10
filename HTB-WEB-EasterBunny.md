@@ -50,7 +50,48 @@ router.get("/message/:id", async (req, res) => {
 
 => Như vậy các message có trường **hidden=1** và **!isAdmin(req)** thì sẽ không hiển thị nội dung ra bên ngoài trình duyệt. Để đạt được mục đích, ta phải tìm cách để request đọc message id=3 phải được hiểu là xuất phát từ **admin**.
 
-Chi tiết phần code xử lý request đến URL `/letters` như sau:
+File **authorisation.js** có nội dung sau liên quan đến việc check tài khoản là Admin:
+
+```javascript
+const isAdmin = (req, res) => {
+  return req.ip === '127.0.0.1' && req.cookies['auth'] === authSecret;
+};
+```
+
+Như vậy `isAdmin(req)=True` khi thỏa mãn đồng thời hai điều kiện sau: `req.ip === '127.0.0.1'` và `req.cookies['auth'] === authSecret`
+
+Tiếp tục đào sâu nội dung Code của Challenge để tìm kiếm thêm các nội dung có liên quan đến hai điều kiện trên, ta nhận thấy đoạn code khi gọi đến link `/submit` có phần gọi đến link `http://127.0.0.1/letters?id=${inserted.lastID}`
+
+```javascript
+router.post("/submit", async (req, res) => {
+    const { message } = req.body;
+
+    if (message) {
+        return db.insertMessage(message)
+            .then(async inserted => {
+                try {
+                    botVisiting = true;
+                    await visit(`http://127.0.0.1/letters?id=${inserted.lastID}`, authSecret);
+                    botVisiting = false;
+                }
+                catch (e) {
+                    console.log(e);
+                    botVisiting = false;
+                }
+                res.status(201).send(response(inserted.lastID));
+            })
+            .catch(() => {
+                res.status(500).send(response('Something went wrong!'));
+            });
+    }
+    return res.status(401).send(response('Missing required parameters!'));
+});
+```
+
+Request `await visit(`http://127.0.0.1/letters?id=${inserted.lastID}`, authSecret);` vừa hay đáp ứng hai điều kiện để `isAdmin(req)=True`. => Vậy để đọc được nội dung của message có `id=3`, ta phải tìm cách để trigger code chạy được lệnh: `await visit(`http://127.0.0.1/letters?id=3`, authSecret);`
+
+
+Chi tiết phần code xử lý request đến URL `/letters` như sau: 
 
 ```javascript
 router.get("/letters", (req, res) => {
@@ -86,7 +127,6 @@ File này extends nội dung từ **base.html**:
 
   <body>
 
-    
   </body>
 </html>
 ```
@@ -96,3 +136,6 @@ File này extends nội dung từ **base.html**:
 
 `<script src="viewletter.js"></script>` => `{{cdn}}/viewletter.js` => `${req.protocol}://${req.hostname}:${req.headers["x-forwarded-port"] ?? 80}/static/viewletter.js`
 
+Thinking!!! Chúng ta có thể lợi dụng được gì trong tình huống này? ... Nếu manipulate được các nội dung như **${req.protocol}**, **${req.hostname}**, **${req.headers["x-forwarded-port"]** thì ta có thể khiến cho URL trỏ đến các file **viewletter.js** thay đổi, và nếu ta thay đổi link đến file fake **viewletter.js** trên server mà ta quản lý thì ta hoàn toàn có thể chỉnh sửa tùy ý nội dung của file **viewletter.js** fake này => Run các script theo ý định mà ta muốn (XSS).
+
+Nhưng làm sao để khiến cho `<base href>` ở request A 
