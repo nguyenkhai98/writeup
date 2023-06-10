@@ -1,4 +1,4 @@
-[HTB] Web - EasterBunny Write Up!
+# [HTB] Web - EasterBunny Write Up!
 ## By @ndkhai
 ***
 * Link Challenge: `https://app.hackthebox.com/challenges/easterbunny`
@@ -200,3 +200,12 @@ Thử truy cập đến link file trên để chắc chắn rằng ứng dụng 
 
 2. Thực hiện Cache Poisoning
 
+![image](https://github.com/nguyenkhai98/writeup/assets/51147179/dfe4df62-aa1a-466d-8245-d673f7feb318)
+
+=> Nếu request sau cũng trỏ đến URL `/letters?id=13` thì sẽ gọi đến file **viewletter.js** fake mà ta đã setup bên trên.
+
+3. Thực hiện call đến `/submit` để write new letter => Ứng dụng sẽ gọi đến `http://127.0.0.1/letters?id=${inserted.lastID}` với `lastID=13` (thứ tự ID mới nhất)
+
+![image](https://github.com/nguyenkhai98/writeup/assets/51147179/70531239-ad9f-4672-a50d-a1f30dfd7c62)
+
+![image](https://github.com/nguyenkhai98/writeup/assets/51147179/2ef27374-6b2b-4189-8d89-a122078577d9)
