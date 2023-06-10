@@ -86,7 +86,7 @@ File này extends nội dung từ **base.html**:
 
   <body>
 
-    {% block content %}{% endblock %}
+    
   </body>
 </html>
 ```
